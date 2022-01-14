@@ -71,8 +71,8 @@ const Admin = () => {
 
     {
       title: "Biển số",
-      dataIndex: "year",
-      key: "year",
+      dataIndex: "licensePlates",
+      key: "licensePlates",
     },
     {
       title: "Số ghế",
@@ -256,13 +256,14 @@ const Admin = () => {
     <div className=" flex justify-center justify-items-center pb-12  bg-gray-600 h-screen overflow-hidden overflow-y-scroll">
       <div>
         <Card
+          className="h-screen"
           title={
             <div>
               <div>
                 <marquee
                   // behavior="alternate"
                   scrollamount="10"
-                  className="bg-sky-300 font-semibold text-4xl py-4 rounded-xl"
+                  className=" bg-blue-300 font-semibold text-4xl py-4 rounded-xl"
                 >
                   Đinh Mạnh Hiếu - D13CNPM5 - 18810310423 - Môn kiểm thử phần
                   mềm
@@ -321,22 +322,24 @@ const Admin = () => {
               </Form.Item>
             </Form>
           </div>
-          <Table
-            rowKey="id"
-            loading={loading}
-            columns={columns}
-            dataSource={searchName ? dsData : dsCars}
-            bordered
-            size="small"
-            pagination={{
-              current: page,
-              showSizeChanger: true,
-              pageSize: pageSize,
-              pageSizeOptions: ["10", "20", "50", "100"],
-              onChange: onChangePage,
-              position: ["bottomCenter"],
-            }}
-          />
+          <div className=" overflow-hidden overflow-x-scroll h-3/6">
+            <Table
+              rowKey="id"
+              loading={loading}
+              columns={columns}
+              dataSource={searchName ? dsData : dsCars}
+              bordered
+              size="small"
+              pagination={{
+                current: page,
+                showSizeChanger: true,
+                pageSize: pageSize,
+                pageSizeOptions: ["10", "20", "50", "100"],
+                onChange: onChangePage,
+                position: ["bottomCenter"],
+              }}
+            />
+          </div>
         </Card>
       </div>
       {visible && (
@@ -356,7 +359,7 @@ const Admin = () => {
               key="back"
               type="primary"
               danger
-              className="text-white bg-gray-500"
+              className="text-white ! bg-gray-500"
               // icon={<HiOutlineXCircle className="mr-1 mb-0.5" />}
               onClick={() => {
                 setVisible(false);
@@ -469,7 +472,7 @@ const Admin = () => {
                 </div>
                 <Form.Item
                   label="Số ghế"
-                  name="seat"
+                  name="typeId"
                   rules={[{ required: true, message: "không được bỏ trống !" }]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
@@ -478,9 +481,9 @@ const Admin = () => {
                     placeholder="Tất cả"
                     disabled={mode === "view"}
                     options={[
-                      { value: 4, label: "4 chỗ" },
-                      { value: 7, label: "7 chỗ" },
-                      { value: 16, label: "16 chỗ" },
+                      { value: 1, label: "4 chỗ" },
+                      { value: 2, label: "7 chỗ" },
+                      { value: 3, label: "16 chỗ" },
                     ]}
                   />
                 </Form.Item>
@@ -502,7 +505,7 @@ const Admin = () => {
                 </Form.Item>
                 <Form.Item
                   label="Biển số"
-                  // name="price"
+                  name="licensePlates"
                   rules={[{ required: true, message: "không được bỏ trống !" }]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
@@ -519,7 +522,17 @@ const Admin = () => {
               </div>
               <div>
                 <Form.Item
-                  label="Mô tả"
+                  label="Mô tả ngắn"
+                  name="shortDescription"
+                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  validateTrigger={["onChange", "onBlur"]}
+                >
+                  <Input.TextArea rows={2} disabled={mode === "view"} />
+                </Form.Item>
+              </div>
+              <div>
+                <Form.Item
+                  label="Mô tả chi tiết"
                   name="description"
                   rules={[{ required: true, message: "không được bỏ trống !" }]}
                   validateTrigger={["onChange", "onBlur"]}

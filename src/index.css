@@ -95,3 +95,6 @@ code {
   top: -0.5px;
   margin: 0 8px 0 2px;
 }
+.ant-input-number-input {
+  width: "100%" !important ;
+}
