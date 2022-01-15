@@ -75,7 +75,7 @@ const Admin = () => {
       key: "licensePlates",
     },
     {
-      title: "Số ghế",
+      title: "Loại xe",
       dataIndex: "seat",
       key: "seat",
     },
@@ -131,7 +131,14 @@ const Admin = () => {
     try {
       const resp = await axios.get(
         `https://cars-rental-api.herokuapp.com/cars`,
-        {}
+        {
+          params: {
+            search: searchName ? searchName : null,
+            year: searchYear ? searchYear : null,
+            typeId: searchSeat ? searchSeat : null,
+            vendorsId: searchVender ? searchVender : null,
+          },
+        }
       );
       setDsCars(resp?.data?.data?.cars);
     } catch (error) {
@@ -180,7 +187,9 @@ const Admin = () => {
           message: "Chỉnh sửa thành công",
         });
       } catch (error) {
-        console.log(error);
+        notification.error({
+          message: error?.message,
+        });
       }
     } else {
       // call api thêm mới
@@ -195,7 +204,9 @@ const Admin = () => {
         setVisible(false);
         setUrlImage(undefined);
       } catch (error) {
-        console.log(error);
+        notification.error({
+          message: error.response.data.message,
+        });
       }
     }
   };
@@ -216,41 +227,33 @@ const Admin = () => {
       }
     }
   };
-  const searchData = (searchName, data) => {
-    let filterData = [];
-    for (var i = 0; i < dsCars?.length; i++) {
-      searchName = searchName.toLowerCase();
-      var full_address = dsCars[i].name.toLowerCase();
-      if (full_address.includes(searchName)) {
-        filterData.push(data[i]);
-      }
-    }
-    // console.log(filterData);
-    return filterData;
-  };
-  const [dsData, setDsData] = useState([]);
+
   // console.log(dsData);
   useEffect(() => {
-    getDsCars();
     getDsCarsVendors();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line no-console
+  useEffect(() => {
+    getDsCars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchVender, searchYear, searchSeat, searchName]); // eslint-disable-line no-console
   useEffect(() => {
     getCarDetail();
-  }, [idCar]);
-  useEffect(() => {
-    var storeName = searchData(searchName, dsCars);
-    setDsData(storeName);
-  }, [searchName]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idCar]); // eslint-disable-line no-console
+
   const initialValue = {
     code: null,
     name: null,
-    seat: null,
+    typeId: null,
     year: null,
     url: null,
     description: null,
     price: null,
     vendorsId: null,
     color: null,
+    shortDescription: null,
+    licensePlates: null,
   };
   return (
     <div className=" flex justify-center justify-items-center pb-12  bg-gray-600 h-screen overflow-hidden overflow-y-scroll">
@@ -260,6 +263,7 @@ const Admin = () => {
           title={
             <div>
               <div>
+                {/* eslint-disable-next-line jsx-a11y/no-distracting-elements */}
                 <marquee
                   // behavior="alternate"
                   scrollamount="10"
@@ -293,23 +297,38 @@ const Admin = () => {
               <Form.Item label={<span>Tên xe</span>}>
                 <Input
                   value={searchName}
+                  allowClear
                   onChange={(e) => setSearchName(e?.target?.value)}
                 />
               </Form.Item>
             </Form>
             <Form>
               <Form.Item label={<span>Tên hãng</span>}>
-                <Input
-                  value={searchVender}
-                  onChange={(e) => setSearchVender(e?.target?.value)}
+                <Select
+                  placeholder="Tất cả"
+                  allowClear
+                  showSearch
+                  optionFilterProp="label"
+                  options={dsCarVendors?.map((e) => ({
+                    ...e,
+                    value: e?.id,
+                    label: `${e?.code} - ${e?.name}`,
+                  }))}
+                  onChange={(value) => setSearchVender(value)}
                 />
               </Form.Item>
             </Form>
             <Form>
-              <Form.Item label={<span>Số ghế</span>}>
-                <Input
-                  value={searchSeat}
-                  onChange={(e) => setSearchSeat(e?.target?.value)}
+              <Form.Item label={<span>Loại xe</span>}>
+                <Select
+                  allowClear
+                  placeholder="Tất cả"
+                  options={[
+                    { value: "1", label: "4 chỗ" },
+                    { value: "2", label: "7 chỗ" },
+                    { value: "3", label: "16 chỗ" },
+                  ]}
+                  onChange={(value) => setSearchSeat(value)}
                 />
               </Form.Item>
             </Form>
@@ -327,7 +346,7 @@ const Admin = () => {
               rowKey="id"
               loading={loading}
               columns={columns}
-              dataSource={searchName ? dsData : dsCars}
+              dataSource={dsCars}
               bordered
               size="small"
               pagination={{
@@ -471,7 +490,7 @@ const Admin = () => {
                   />
                 </div>
                 <Form.Item
-                  label="Số ghế"
+                  label="Loại xe"
                   name="typeId"
                   rules={[{ required: true, message: "không được bỏ trống !" }]}
                   validateTrigger={["onChange", "onBlur"]}

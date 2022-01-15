@@ -1,9 +1,19 @@
-import { Button, Carousel, Image, Typography } from "antd";
+import {
+  Button,
+  Carousel,
+  Image,
+  Form,
+  Input,
+  Select,
+  Spin,
+  Empty,
+  Typography,
+} from "antd";
 import React, { useState, useEffect } from "react";
-
+import { HiOutlineSearch } from "react-icons/hi";
 import axios from "axios";
 import Modal from "antd/lib/modal/Modal";
-import Header from "../../components/Header";
+// import Header from "../../components/Header";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import Footer from "../../components/Footer";
 const Home = () => {
@@ -11,16 +21,47 @@ const Home = () => {
   const [carDetail, setCarDetail] = useState([]);
   const [idCar, setIdCar] = useState();
   const [visible, setVisible] = useState(false);
+  const [dsCarVendors, setDsCarsVendors] = useState([]);
+  const [searchName, setSearchName] = useState("");
+  const [searchVender, setSearchVender] = useState("");
+  const [searchYear, setSearchYear] = useState("");
+  const [searchSeat, setSearchSeat] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState(false);
+  const [form] = Form.useForm();
+  const initialValue = {
+    name: null,
+    seat: null,
+    vendor: null,
+    year: null,
+  };
+  const onRefresh = () => {
+    setSearchSeat("");
+    setSearchVender("");
+    setSearchYear("");
+    setSearchName("");
+    form.setFieldsValue(initialValue);
+  };
   const getDsCars = async () => {
+    setLoading(true);
     try {
       const resp = await axios.get(
         `https://cars-rental-api.herokuapp.com/cars`,
-        {}
+        {
+          params: {
+            search: searchName ? searchName : null,
+            year: searchYear ? searchYear : null,
+            typeId: searchSeat ? searchSeat : null,
+            vendorsId: searchVender ? searchVender : null,
+          },
+        }
       );
       setDsCars(resp?.data?.data?.cars);
     } catch (error) {
       console.log(error);
     }
+    setSearch(false);
+    setLoading(false);
   };
   const getCarDetail = async () => {
     if (idCar) {
@@ -35,15 +76,106 @@ const Home = () => {
       }
     }
   };
+  const getDsCarsVendors = async () => {
+    try {
+      const resp = await axios.get(
+        `https://cars-rental-api.herokuapp.com/vendors`,
+        {}
+      );
+      setDsCarsVendors(resp?.data?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     getCarDetail();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idCar]);
+
   useEffect(() => {
     getDsCars();
+    getDsCarsVendors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  useEffect(() => {
+    getDsCars();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
   return (
     <div>
-      <Header />
+      {/* <Header /> */}
+      <div className=" flex justify-center justify-items-center pt-4  fixed shadow-lg  z-50 w-full bg-white">
+        <Form form={form} className="flex items-center">
+          <div className="w-24 mr-4">
+            <img
+              src="https://xehoangviet.galaxycloud.vn/template/xe_hoang_viet/images/logo.png"
+              className="w-full"
+              alt="logo"
+            />
+          </div>
+          <div className=" grid grid-cols-5 mb-3 gap-10 ">
+            <div>
+              <Form.Item name="name" label={<span>Tên xe</span>}>
+                <Input
+                  placeholder="Nhập tên xe"
+                  allowClear
+                  onChange={(e) => setSearchName(e?.target?.value)}
+                />
+              </Form.Item>
+            </div>
+            <div>
+              <Form.Item name="vendor" label={<span>Tên hãng</span>}>
+                <Select
+                  placeholder="Chọn hãng xe"
+                  allowClear
+                  showSearch
+                  optionFilterProp="label"
+                  options={dsCarVendors?.map((e) => ({
+                    ...e,
+                    value: e?.id,
+                    label: `${e?.code} - ${e?.name}`,
+                  }))}
+                  onChange={(value) => setSearchVender(value)}
+                />
+              </Form.Item>
+            </div>
+            <div>
+              <Form.Item name="seat" label={<span>Loại xe</span>}>
+                <Select
+                  allowClear
+                  placeholder="Chọn loại xe"
+                  options={[
+                    { value: "1", label: "4 chỗ" },
+                    { value: "2", label: "7 chỗ" },
+                    { value: "3", label: "16 chỗ" },
+                  ]}
+                  onChange={(value) => setSearchSeat(value)}
+                />
+              </Form.Item>
+            </div>
+            <div>
+              <Form.Item name="year" label={<span>Năm sản xuất</span>}>
+                <Input
+                  placeholder="Nhập năm sản xuất"
+                  onChange={(e) => setSearchYear(e?.target?.value)}
+                />
+              </Form.Item>
+            </div>
+            <div style={{ marginTop: 30 }}>
+              <Button
+                style={{ backgroundColor: "green" }}
+                type="primary"
+                className="mr-2"
+                onClick={() => setSearch(search === true ? false : true)}
+              >
+                <div className="flex justify-end items-center ">
+                  <HiOutlineSearch className="mr-2" /> <span>Tìm kiếm</span>
+                </div>
+              </Button>
+            </div>
+          </div>
+        </Form>
+      </div>
       <div>
         <Carousel autoplay>
           <div>
@@ -82,42 +214,78 @@ const Home = () => {
       </div>
       <div className=" flex justify-center justify-items-center pb-12">
         <div className="w-4/5">
-          {/* <div id="4cho" style={{ marginTop: -100 }} className="hidden"></div> */}
-          <Typography>Xe 4 chỗ</Typography>
+          <div className="flex justify-center mt-5 mb-5">
+            <Typography
+              className="text-4xl font-mono"
+              style={{ fontFamily: "system-ui" }}
+            >
+              Dịch vụ thuê xe ô tô Mạnh Hiếu
+            </Typography>
+          </div>
 
-          <div className="grid xl:grid-cols-2 sm:grid-cols-1 xl:gap-x-10">
-            {dsCars?.map((e) => {
-              return (
-                <div className="flex  mt-10 border rounded-md shadow-sm px-3 py-4">
-                  <div className="mr-2">
-                    <img
-                      className="rounded-md shadow-sm "
-                      src={e?.url}
-                      style={{ height: 250, width: 350 }}
-                      alt="ảnh ô tô"
-                    />
-                  </div>
-                  <div>
-                    <span>{e?.name}</span>
-                    <div>
-                      <Button
-                        className="mr-2 !text-white !bg-green-500"
-                        type="primary"
-                        onClick={() => {
-                          setVisible(true);
-                          setIdCar(e?.id);
-                        }}
-                      >
-                        <div className="flex justify-between items-center">
-                          <DoubleRightOutlined className="mr-2" />{" "}
-                          <span>Xem chi tiết</span>
+          <div>
+            {loading ? (
+              <div className="flex justify-center">
+                <Spin tip="Loading..."></Spin>
+              </div>
+            ) : (
+              <div>
+                {dsCars?.length > 0 ? (
+                  <div className="grid xl:grid-cols-2 sm:grid-cols-1 xl:gap-x-10">
+                    {dsCars?.map((e) => {
+                      return (
+                        <div className="grid grid-cols-2 mt-10 border rounded-md shadow-sm px-3 py-4">
+                          <div className="mr-2 ">
+                            <img
+                              className="rounded-md shadow-sm "
+                              src={e?.url}
+                              style={{ height: 250, width: 350 }}
+                              alt="ảnh ô tô"
+                            />
+                          </div>
+                          <div className="flex flex-col justify-between">
+                            <div>
+                              <p className="text-2xl font-semibold">
+                                {e?.name}
+                              </p>
+                              <p>{e?.shortDescription}</p>
+                            </div>
+
+                            <div>
+                              <div className="inline-flex bg-red-200 py-1 px-3 mb-2">
+                                <span className="text-base">
+                                  Liên hệ: 0972314521
+                                </span>
+                              </div>
+                              <br></br>
+                              <Button
+                                className="mr-2 !text-white !bg-green-500"
+                                type="primary"
+                                onClick={() => {
+                                  setVisible(true);
+                                  setIdCar(e?.id);
+                                }}
+                              >
+                                <div className="flex justify-between items-center">
+                                  <DoubleRightOutlined className="mr-2" />{" "}
+                                  <span>Xem chi tiết</span>
+                                </div>
+                              </Button>
+                            </div>
+                          </div>
                         </div>
-                      </Button>
-                    </div>
+                      );
+                    })}
                   </div>
-                </div>
-              );
-            })}
+                ) : (
+                  <Empty description={<span>Không có dữ liệu</span>}>
+                    <Button type="primary" onClick={onRefresh}>
+                      Làm mới
+                    </Button>
+                  </Empty>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -141,36 +309,67 @@ const Home = () => {
                   />
                 </div>
                 <div>
-                  <span>{e?.name}</span>
+                  <div className=" flex justify-between w-48">
+                    <span className="text-2xl font-semibold">{e?.name}</span>
+                  </div>
+                  <div className=" flex  ">
+                    <div className="w-60">
+                      <span>Hãng: </span>
+                      <span className="text-base font-semibold">
+                        {e?.vendorsName}
+                      </span>
+                    </div>
+                    <div>
+                      <span>Nắm sản xuất: </span>
+                      <span className="text-base font-semibold">{e?.year}</span>
+                    </div>
+                  </div>
+                  <div className=" flex  ">
+                    <div className="w-60">
+                      <span>Loại xe: </span>
+                      <span className="text-base font-semibold">
+                        {e?.seat} chỗ
+                      </span>
+                    </div>
+                    <div>
+                      <span>Biển số: </span>
+                      <span className="text-base font-semibold">
+                        {e?.licensePlates}
+                      </span>
+                    </div>
+                  </div>
+                  <p>Mô tả:</p>
+                  <p>{e?.description}</p>
                 </div>
               </div>
             );
           })}
           <div className="pl-10 mt-10 border-dashed border-2 pt-2">
-            <h1 className="text-2xl">Chú ý</h1>
+            <h1 className="text-2xl">Liên hệ cho thuê xe</h1>
             <ul className="list-disc">
               <li>
-                Giá trên áp dụng cho mỗi ca xe được phép đi 250km và trong 8
-                giờ. (Ca xe từ 6-8h đến 18h00 hàng ngày).
-              </li>
-              <li>Giao xe từ 6h00 đến 8h00 hoặc 19h00 đến 21h00 hàng ngày.</li>
-              <li>
-                Sử dụng xe dưới 4giờ giá 450.000đ/ca. Mỗi giờ tiếp theo giá:
-                100.000 đ/giờ.
+                <span className="font-bold mr-5">Địa chỉ:</span>Mai dịch, Cầu
+                Giấy, Hà Nội
               </li>
               <li>
-                Quý khách lưu ý trả xe vào 18h00 đến 19h00 hàng ngày. (Sau 18h00
-                chúng tôi tính phí phụ trội theo báo giá).
+                <span className="font-bold mr-4">Hotline:</span>
+                0972.314.521
               </li>
               <li>
-                Quý khách tự ý sử dụng xe quá giờ ghi trong Hợp đồng sẽ tính
-                bằng 150% giá giờ phụ trội trong báo giá này.
+                <span className="font-bold mr-6">Email:</span>{" "}
+                manhhieua1@gmail.com
+              </li>
+              <li>
+                <span className="font-bold mr-3">Website:</span>
+                <a href="kiem-thu-oto.herokuapp.com" className="">
+                  kiem-thu-oto.herokuapp.com
+                </a>
               </li>
             </ul>
           </div>
         </div>
       </Modal>
-      <Footer />
+      {loading ? null : <Footer />}
     </div>
   );
 };
