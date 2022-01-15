@@ -44,6 +44,21 @@ const Home = () => {
     vendor: null,
     year: null,
   };
+  const banner = [
+    {
+      id: 1,
+      url: "https://hondagiaiphong.net/images/2018/Tin%20tuc/10.honda-viet-nam-cong-bo-gia-ban-le-moi/01-banner-top-gia-xe-oto-honda.jpg",
+    },
+    {
+      id: 2,
+      url: "https://img3.thuthuatphanmem.vn/uploads/2019/10/08/banner-quang-cao-o-to_103213258.jpg",
+    },
+    {
+      id: 3,
+      url: "https://honda-mydinh.com.vn/wp-content/uploads/2016/12/01-banner-top-xe-oto-honda-city-2018.jpg",
+    },
+    { id: 4, url: "https://voxeoto.vn/wp-content/uploads/2020/07/banner.jpg" },
+  ];
 
   const onRefresh = () => {
     setSearchSeat("");
@@ -83,12 +98,12 @@ const Home = () => {
         );
         setCarDetail([resp?.data?.data?.car]);
         const seat1 = resp?.data?.data?.car?.seat;
-        const vendor1 = resp?.data?.data?.car?.seat;
+        const vendor1 = resp?.data?.data?.car?.vendorsName;
         // eslint-disable-next-line  eqeqeq
         setTypePrice(seat1 == "4" ? 100000 : seat1 == "7" ? 200000 : 350000);
         setVendorPrice(
           // eslint-disable-next-line  eqeqeq
-          vendor1 == "1" ? 100000 : vendor1 == "2" ? 200000 : 150000
+          vendor1 == "Toyota" ? 100000 : vendor1 == "Vinfast" ? 200000 : 150000
         );
       } catch (error) {
         console.log(error);
@@ -166,6 +181,7 @@ const Home = () => {
             <div>
               <Form.Item name="seat" label={<span>Loại xe</span>}>
                 <Select
+                  allowClear
                   showSearch
                   optionFilterProp="label"
                   placeholder="Chọn loại xe"
@@ -204,38 +220,18 @@ const Home = () => {
       </div>
       <div>
         <Carousel autoplay>
-          <div>
-            <img
-              src="https://hondagiaiphong.net/images/2018/Tin%20tuc/10.honda-viet-nam-cong-bo-gia-ban-le-moi/01-banner-top-gia-xe-oto-honda.jpg"
-              className="w-full mt-20"
-              style={{ height: 500 }}
-              alt="ảnh ô tô"
-            />
-          </div>
-          <div>
-            <img
-              src="https://img3.thuthuatphanmem.vn/uploads/2019/10/08/banner-quang-cao-o-to_103213258.jpg"
-              className="w-full mt-20"
-              style={{ height: 500 }}
-              alt="ảnh ô tô"
-            />
-          </div>
-          <div>
-            <img
-              src="https://honda-mydinh.com.vn/wp-content/uploads/2016/12/01-banner-top-xe-oto-honda-city-2018.jpg"
-              className="w-full mt-20"
-              style={{ height: 500 }}
-              alt="ảnh ô tô"
-            />
-          </div>
-          <div>
-            <img
-              src="http://hondaotohungyen.com/wp-content/uploads/2018/06/Xe-Honda-Odyssey-2016-tai-viet-nam-1088x403.png"
-              className="w-full mt-20"
-              style={{ height: 500 }}
-              alt="ảnh ô tô"
-            />
-          </div>
+          {banner?.map((e, index) => {
+            return (
+              <div key={index}>
+                <img
+                  src={e?.url}
+                  className="w-full mt-20"
+                  style={{ height: 500 }}
+                  alt="ảnh ô tô"
+                />
+              </div>
+            );
+          })}
         </Carousel>
       </div>
       <div className=" flex justify-center justify-items-center pb-12">
@@ -327,6 +323,7 @@ const Home = () => {
           onCancel={() => {
             setVisible(false);
             setDays(1);
+            setKmPrice(650000);
             setChecked(false);
           }}
           footer={false}
@@ -418,16 +415,19 @@ const Home = () => {
                             <Button
                               // eslint-disable-next-line  eqeqeq
                               disabled={days == 1}
+                              type="primary"
+                              danger
                               size="small"
                               shape="circle"
-                              icon={<HiOutlineMinusSm />}
+                              icon={<HiOutlineMinusSm className="ml-1" />}
                               onClick={() => setDays(days - 1)}
                             ></Button>
                             <span className="px-3">{days}</span>
                             <Button
                               size="small"
+                              type="primary"
                               shape="circle"
-                              icon={<HiPlusSm />}
+                              icon={<HiPlusSm className="ml-1" />}
                               onClick={() => setDays(days + 1)}
                             ></Button>
                           </div>

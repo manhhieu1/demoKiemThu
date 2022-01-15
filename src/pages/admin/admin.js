@@ -188,7 +188,7 @@ const Admin = () => {
         });
       } catch (error) {
         notification.error({
-          message: error?.message,
+          message: error.response.data.message,
         });
       }
     } else {
@@ -256,10 +256,10 @@ const Admin = () => {
     licensePlates: null,
   };
   return (
-    <div className=" flex justify-center justify-items-center pb-12  bg-gray-600 h-screen overflow-hidden overflow-y-scroll">
+    <div className=" flex justify-center justify-items-center pb-12  bg-gray-600 h-screen ">
       <div>
         <Card
-          className="h-screen"
+          className="h-screen overflow-hidden overflow-y-scroll"
           title={
             <div>
               <div>
