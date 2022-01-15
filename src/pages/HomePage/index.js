@@ -8,6 +8,7 @@ import {
   Spin,
   Empty,
   Typography,
+  Checkbox,
 } from "antd";
 import React, { useState, useEffect } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
@@ -16,6 +17,7 @@ import Modal from "antd/lib/modal/Modal";
 // import Header from "../../components/Header";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import Footer from "../../components/Footer";
+import { HiOutlineMinusSm, HiPlusSm } from "react-icons/hi";
 const Home = () => {
   const [dsCars, setDsCars] = useState([]);
   const [carDetail, setCarDetail] = useState([]);
@@ -28,6 +30,13 @@ const Home = () => {
   const [searchSeat, setSearchSeat] = useState("");
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(false);
+  const [vendorPrice, setVendorPrice] = useState(0);
+  const [kmPrice, setKmPrice] = useState(650000);
+  const [typePrice, setTypePrice] = useState(0);
+  const [drivePrice, setdrivePrice] = useState(0);
+  const [days, setDays] = useState(1);
+  const [checked, setChecked] = useState(false);
+
   const [form] = Form.useForm();
   const initialValue = {
     name: null,
@@ -35,12 +44,14 @@ const Home = () => {
     vendor: null,
     year: null,
   };
+
   const onRefresh = () => {
     setSearchSeat("");
     setSearchVender("");
     setSearchYear("");
     setSearchName("");
     form.setFieldsValue(initialValue);
+    getDsCars();
   };
   const getDsCars = async () => {
     setLoading(true);
@@ -71,6 +82,14 @@ const Home = () => {
           {}
         );
         setCarDetail([resp?.data?.data?.car]);
+        const seat1 = resp?.data?.data?.car?.seat;
+        const vendor1 = resp?.data?.data?.car?.seat;
+        // eslint-disable-next-line  eqeqeq
+        setTypePrice(seat1 == "4" ? 100000 : seat1 == "7" ? 200000 : 350000);
+        setVendorPrice(
+          // eslint-disable-next-line  eqeqeq
+          vendor1 == "1" ? 100000 : vendor1 == "2" ? 200000 : 150000
+        );
       } catch (error) {
         console.log(error);
       }
@@ -101,6 +120,11 @@ const Home = () => {
     getDsCars();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
+  useEffect(() => {
+    // eslint-disable-next-line eqeqeq
+    setdrivePrice(checked == true ? 500000 : 0);
+  }, [checked]);
+
   return (
     <div>
       {/* <Header /> */}
@@ -142,7 +166,8 @@ const Home = () => {
             <div>
               <Form.Item name="seat" label={<span>Loại xe</span>}>
                 <Select
-                  allowClear
+                  showSearch
+                  optionFilterProp="label"
                   placeholder="Chọn loại xe"
                   options={[
                     { value: "1", label: "4 chỗ" },
@@ -166,6 +191,7 @@ const Home = () => {
                 style={{ backgroundColor: "green" }}
                 type="primary"
                 className="mr-2"
+                // eslint-disable-next-line eqeqeq
                 onClick={() => setSearch(search === true ? false : true)}
               >
                 <div className="flex justify-end items-center ">
@@ -232,9 +258,12 @@ const Home = () => {
               <div>
                 {dsCars?.length > 0 ? (
                   <div className="grid xl:grid-cols-2 sm:grid-cols-1 xl:gap-x-10">
-                    {dsCars?.map((e) => {
+                    {dsCars?.map((e, index) => {
                       return (
-                        <div className="grid grid-cols-2 mt-10 border rounded-md shadow-sm px-3 py-4">
+                        <div
+                          key={index}
+                          className="grid grid-cols-2 mt-10 border rounded-md shadow-sm px-3 py-4"
+                        >
                           <div className="mr-2 ">
                             <img
                               className="rounded-md shadow-sm "
@@ -259,6 +288,7 @@ const Home = () => {
                               </div>
                               <br></br>
                               <Button
+                                id={`btn-${index}`}
                                 className="mr-2 !text-white !bg-green-500"
                                 type="primary"
                                 onClick={() => {
@@ -289,86 +319,162 @@ const Home = () => {
           </div>
         </div>
       </div>
-      <Modal
-        title="Thông tin chi tiết"
-        width="1200px"
-        visible={visible}
-        onCancel={() => setVisible(false)}
-        footer={false}
-      >
-        <div className=" border rounded-md shadow-sm px-3 py-4">
-          {carDetail?.map((e) => {
-            return (
-              <div className="flex  ">
-                <div className="mr-10">
-                  <Image
-                    // className="rounded-md shadow-sm "
-                    src={e?.url}
-                    width={500}
-                    alt="ảnh ô tô"
-                  />
+      {visible && (
+        <Modal
+          title="Thông tin chi tiết"
+          width="1200px"
+          visible={visible}
+          onCancel={() => {
+            setVisible(false);
+            setDays(1);
+            setChecked(false);
+          }}
+          footer={false}
+        >
+          <div className=" border rounded-md shadow-sm px-3 py-4">
+            {carDetail?.map((e) => {
+              return (
+                <div className="flex  ">
+                  <div className="mr-10">
+                    <Image
+                      // className="rounded-md shadow-sm "
+                      src={e?.url}
+                      width={500}
+                      alt="ảnh ô tô"
+                    />
+                  </div>
+                  <div>
+                    <div className=" flex justify-between w-48">
+                      <span className="text-2xl font-semibold">{e?.name}</span>
+                    </div>
+                    <div className=" flex  ">
+                      <div className="w-60">
+                        <span>Hãng: </span>
+                        <span className="text-base font-semibold">
+                          {e?.vendorsName}
+                        </span>
+                      </div>
+                      <div>
+                        <span>Nắm sản xuất: </span>
+                        <span className="text-base font-semibold">
+                          {e?.year}
+                        </span>
+                      </div>
+                    </div>
+                    <div className=" flex  ">
+                      <div className="w-60">
+                        <span>Loại xe: </span>
+                        <span className="text-base font-semibold">
+                          {e?.seat} chỗ
+                        </span>
+                      </div>
+                      <div>
+                        <span>Biển số: </span>
+                        <span className="text-base font-semibold">
+                          {e?.licensePlates}
+                        </span>
+                      </div>
+                    </div>
+                    <p>Mô tả:</p>
+                    <p>{e?.description}</p>
+                    <div className="w-full">
+                      <Checkbox
+                        value={checked}
+                        onChange={(e) => setChecked(e?.target?.checked)}
+                      >
+                        Thuê xe có lái
+                      </Checkbox>
+                      <Form className="grid grid-cols-2 gap-10">
+                        <Form.Item label="Mức sử dụng xe">
+                          <Select
+                            defaultValue="1"
+                            showSearch
+                            optionFilterProp="label"
+                            placeholder="Chọn mức sử dụng xe"
+                            options={[
+                              { value: "1", label: "Dưới 100Km/ngày" },
+                              { value: "2", label: "100-250km/ ngày" },
+                              { value: "3", label: "250km-500km/ngày" },
+                              { value: "4", label: "Trên 500km/ngày" },
+                            ]}
+                            onSelect={(value) =>
+                              setKmPrice(
+                                // eslint-disable-next-line  eqeqeq
+                                value == "1"
+                                  ? 650000
+                                  : // eslint-disable-next-line  eqeqeq
+                                  value == "2"
+                                  ? 900000
+                                  : // eslint-disable-next-line  eqeqeq
+                                  value == "3"
+                                  ? 1100000
+                                  : 1300000
+                              )
+                            }
+                          />
+                        </Form.Item>
+                        <Form.Item label={<span>Số ngày muốn thuê</span>}>
+                          <div className="flex w-4/6 items-center">
+                            <Button
+                              // eslint-disable-next-line  eqeqeq
+                              disabled={days == 1}
+                              size="small"
+                              shape="circle"
+                              icon={<HiOutlineMinusSm />}
+                              onClick={() => setDays(days - 1)}
+                            ></Button>
+                            <span className="px-3">{days}</span>
+                            <Button
+                              size="small"
+                              shape="circle"
+                              icon={<HiPlusSm />}
+                              onClick={() => setDays(days + 1)}
+                            ></Button>
+                          </div>
+                        </Form.Item>
+                        <></>
+                      </Form>
+                      <div className=" inline-block pr-2 py-1 text-2xl mt-2">
+                        Giá thuê:{" "}
+                        {(
+                          (vendorPrice + kmPrice + typePrice + drivePrice) *
+                          days
+                        )
+                          .toString()
+                          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}{" "}
+                        VNĐ
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <div className=" flex justify-between w-48">
-                    <span className="text-2xl font-semibold">{e?.name}</span>
-                  </div>
-                  <div className=" flex  ">
-                    <div className="w-60">
-                      <span>Hãng: </span>
-                      <span className="text-base font-semibold">
-                        {e?.vendorsName}
-                      </span>
-                    </div>
-                    <div>
-                      <span>Nắm sản xuất: </span>
-                      <span className="text-base font-semibold">{e?.year}</span>
-                    </div>
-                  </div>
-                  <div className=" flex  ">
-                    <div className="w-60">
-                      <span>Loại xe: </span>
-                      <span className="text-base font-semibold">
-                        {e?.seat} chỗ
-                      </span>
-                    </div>
-                    <div>
-                      <span>Biển số: </span>
-                      <span className="text-base font-semibold">
-                        {e?.licensePlates}
-                      </span>
-                    </div>
-                  </div>
-                  <p>Mô tả:</p>
-                  <p>{e?.description}</p>
-                </div>
-              </div>
-            );
-          })}
-          <div className="pl-10 mt-10 border-dashed border-2 pt-2">
-            <h1 className="text-2xl">Liên hệ cho thuê xe</h1>
-            <ul className="list-disc">
-              <li>
-                <span className="font-bold mr-5">Địa chỉ:</span>Mai dịch, Cầu
-                Giấy, Hà Nội
-              </li>
-              <li>
-                <span className="font-bold mr-4">Hotline:</span>
-                0972.314.521
-              </li>
-              <li>
-                <span className="font-bold mr-6">Email:</span>{" "}
-                manhhieua1@gmail.com
-              </li>
-              <li>
-                <span className="font-bold mr-3">Website:</span>
-                <a href="kiem-thu-oto.herokuapp.com" className="">
-                  kiem-thu-oto.herokuapp.com
-                </a>
-              </li>
-            </ul>
+              );
+            })}
+            <div className="pl-10 mt-10 border-dashed border-2 pt-2">
+              <h1 className="text-2xl">Liên hệ cho thuê xe</h1>
+              <ul className="list-disc">
+                <li>
+                  <span className="font-bold mr-5">Địa chỉ:</span>Mai dịch, Cầu
+                  Giấy, Hà Nội
+                </li>
+                <li>
+                  <span className="font-bold mr-4">Hotline:</span>
+                  0972.314.521
+                </li>
+                <li>
+                  <span className="font-bold mr-6">Email:</span>{" "}
+                  manhhieua1@gmail.com
+                </li>
+                <li>
+                  <span className="font-bold mr-3">Website:</span>
+                  <a href="kiem-thu-oto.herokuapp.com" className="">
+                    kiem-thu-oto.herokuapp.com
+                  </a>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-      </Modal>
+        </Modal>
+      )}
       {loading ? null : <Footer />}
     </div>
   );

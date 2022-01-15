@@ -3,6 +3,7 @@ import { BrowserRouter, Switch, Route } from "react-router-dom";
 // pages
 import HomePage from "./pages/HomePage";
 import Admin from "./pages/admin/admin";
+import NotFound from "./pages/404";
 
 const App = () => {
   return (
@@ -15,9 +16,10 @@ const App = () => {
       </Route> */}
       <BrowserRouter>
         <Switch>
-          <Route path="/admin" component={Admin} />
-          <Route path="" component={HomePage} />
-          <Route path="/home" component={HomePage} />
+          <Route exact path="/admin" component={Admin} />
+          <Route exact path="/" component={HomePage} />
+          <Route exact path="/home" component={HomePage} />
+          <Route exact path="*" component={NotFound} />
         </Switch>
       </BrowserRouter>
     </Switch>
