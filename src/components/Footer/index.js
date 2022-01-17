@@ -5,7 +5,7 @@ const Footer = ({ ...otherProps }) => {
     <footer className="bg-gray-600">
       <div className="w-full max-w-7xl mx-auto py-8 px-2.5 text-center">
         <span className="text-base text-white ">
-          COPYRIGHT © 2021 - Đinh Mạnh Hiếu
+          COPYRIGHT © 2022 - Đinh Mạnh Hiếu
         </span>
       </div>
     </footer>

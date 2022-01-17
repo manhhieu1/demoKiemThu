@@ -31,8 +31,9 @@ const Home = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(false);
   const [vendorPrice, setVendorPrice] = useState(0);
-  const [kmPrice, setKmPrice] = useState(650000);
+  const [kmPrice, setKmPrice] = useState(300000);
   const [typePrice, setTypePrice] = useState(0);
+  const [carPrice, setCarPrice] = useState(0);
   const [drivePrice, setdrivePrice] = useState(0);
   const [days, setDays] = useState(1);
   const [checked, setChecked] = useState(false);
@@ -99,6 +100,7 @@ const Home = () => {
         setCarDetail([resp?.data?.data?.car]);
         const seat1 = resp?.data?.data?.car?.seat;
         const vendor1 = resp?.data?.data?.car?.vendorsName;
+        setCarPrice(resp?.data?.data?.car?.price);
         // eslint-disable-next-line  eqeqeq
         setTypePrice(seat1 == "4" ? 100000 : seat1 == "7" ? 200000 : 350000);
         setVendorPrice(
@@ -323,7 +325,7 @@ const Home = () => {
           onCancel={() => {
             setVisible(false);
             setDays(1);
-            setKmPrice(650000);
+            setKmPrice(300000);
             setChecked(false);
           }}
           footer={false}
@@ -398,14 +400,14 @@ const Home = () => {
                               setKmPrice(
                                 // eslint-disable-next-line  eqeqeq
                                 value == "1"
-                                  ? 650000
+                                  ? 300000
                                   : // eslint-disable-next-line  eqeqeq
                                   value == "2"
-                                  ? 900000
+                                  ? 450000
                                   : // eslint-disable-next-line  eqeqeq
                                   value == "3"
-                                  ? 1100000
-                                  : 1300000
+                                  ? 550000
+                                  : 650000
                               )
                             }
                           />
@@ -437,7 +439,11 @@ const Home = () => {
                       <div className=" inline-block pr-2 py-1 text-2xl mt-2">
                         Giá thuê:{" "}
                         {(
-                          (vendorPrice + kmPrice + typePrice + drivePrice) *
+                          (vendorPrice +
+                            kmPrice +
+                            typePrice +
+                            drivePrice +
+                            parseInt(carPrice)) *
                           days
                         )
                           .toString()
