@@ -8,7 +8,6 @@ import {
   Button,
   notification,
   Tooltip,
-  InputNumber,
   Typography,
   Card,
 } from "antd";
@@ -228,7 +227,6 @@ const Admin = () => {
     }
   };
 
-  // console.log(dsData);
   useEffect(() => {
     getDsCarsVendors();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -265,7 +263,6 @@ const Admin = () => {
               <div>
                 {/* eslint-disable-next-line jsx-a11y/no-distracting-elements */}
                 <marquee
-                  // behavior="alternate"
                   scrollamount="10"
                   className=" bg-blue-300 font-semibold text-4xl py-4 rounded-xl"
                 >
@@ -335,6 +332,7 @@ const Admin = () => {
             <Form>
               <Form.Item label={<span>Năm sản xuất</span>}>
                 <Input
+                  type="number"
                   value={searchYear}
                   onChange={(e) => setSearchYear(e?.target?.value)}
                 />
@@ -363,7 +361,13 @@ const Admin = () => {
       </div>
       {visible && (
         <Modal
-          title="Thông tin chi tiết"
+          title={
+            mode === "view"
+              ? "Chi tiết xe ô tô"
+              : mode === "edit"
+              ? "Chỉnh sửa thông tin xe ô tô"
+              : "Thêm mới xe ô tô"
+          }
           width="1200px"
           visible={visible}
           onCancel={() => {
@@ -379,7 +383,6 @@ const Admin = () => {
               type="primary"
               danger
               className="text-white ! bg-gray-500"
-              // icon={<HiOutlineXCircle className="mr-1 mb-0.5" />}
               onClick={() => {
                 setVisible(false);
                 setMode("");
@@ -388,26 +391,29 @@ const Admin = () => {
                 form.setFieldsValue(initialValue);
               }}
             >
-              Hủy
+              {mode === "view" ? "Đóng" : "Hủy"}
             </Button>,
-            <Button
-              onClick={() => {
-                form
-                  .validateFields()
-                  .then((data) => {
-                    onSubmit(data);
-                  })
-                  .catch((info) => {
-                    console.log("Validate Failed:", info);
-                  });
-              }}
-              htmlType="submit"
-              key="submit"
-              type="primary"
-              // icon={<HiOutlineNewspaper className="mr-1 mb-0.5" />}
-            >
-              Lưu
-            </Button>,
+            <div>
+              {mode === "view" ? null : (
+                <Button
+                  onClick={() => {
+                    form
+                      .validateFields()
+                      .then((data) => {
+                        onSubmit(data);
+                      })
+                      .catch((info) => {
+                        console.log("Validate Failed:", info);
+                      });
+                  }}
+                  htmlType="submit"
+                  key="submit"
+                  type="primary"
+                >
+                  Lưu
+                </Button>
+              )}
+            </div>,
           ]}
         >
           <div>
@@ -423,7 +429,9 @@ const Admin = () => {
                 <Form.Item
                   label="Mã Xe"
                   name="code"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  rules={[
+                    { required: true, message: "không được bỏ trống mã xe!" },
+                  ]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
                   <Input disabled={mode === "view" || mode === "edit"} />
@@ -431,7 +439,9 @@ const Admin = () => {
                 <Form.Item
                   label="Tên xe"
                   name="name"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  rules={[
+                    { required: true, message: "không được bỏ trống tên xe!" },
+                  ]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
                   <Input disabled={mode === "view"} />
@@ -455,12 +465,7 @@ const Admin = () => {
                   />
                 </Form.Item>
 
-                <Form.Item
-                  label="Địa chỉ hình ảnh"
-                  name="url"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
-                  validateTrigger={["onChange", "onBlur"]}
-                >
+                <Form.Item label="Địa chỉ hình ảnh" name="url">
                   <Input
                     placeholder="Nhập URL hình ảnh"
                     disabled={mode === "view"}
@@ -470,7 +475,12 @@ const Admin = () => {
                 <Form.Item
                   label="Năm sản xuất"
                   name="year"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "không được bỏ trống năm sản xuất !",
+                    },
+                  ]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
                   <Input type="number" disabled={mode === "view"} />
@@ -492,7 +502,12 @@ const Admin = () => {
                 <Form.Item
                   label="Loại xe"
                   name="typeId"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "không được bỏ trống loại xe !",
+                    },
+                  ]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
                   <Select
@@ -508,54 +523,39 @@ const Admin = () => {
                 </Form.Item>
 
                 <Form.Item
-                  label="Giá xe"
+                  label="Giá cho thuê cộng thêm"
                   name="price"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  rules={[
+                    { required: true, message: "không được bỏ trống giá !" },
+                  ]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
-                  <InputNumber
-                    className="w-full rounded-lg text-black"
-                    formatter={(value) =>
-                      `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    }
-                    parser={(value) => value.replace(/\$\s?|(,*)/g, "")}
-                    disabled={mode === "view"}
-                  />
+                  <Input type="number" />
                 </Form.Item>
                 <Form.Item
                   label="Biển số"
                   name="licensePlates"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
+                  rules={[
+                    {
+                      required: true,
+                      message: "không được bỏ trống biển số !",
+                    },
+                  ]}
                   validateTrigger={["onChange", "onBlur"]}
                 >
                   <Input disabled={mode === "view"} />
                 </Form.Item>
-                <Form.Item
-                  label="Màu sắc"
-                  name="color"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
-                  validateTrigger={["onChange", "onBlur"]}
-                >
+                <Form.Item label="Màu sắc" name="color">
                   <Input disabled={mode === "view"} />
                 </Form.Item>
               </div>
               <div>
-                <Form.Item
-                  label="Mô tả ngắn"
-                  name="shortDescription"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
-                  validateTrigger={["onChange", "onBlur"]}
-                >
+                <Form.Item label="Mô tả ngắn" name="shortDescription">
                   <Input.TextArea rows={2} disabled={mode === "view"} />
                 </Form.Item>
               </div>
               <div>
-                <Form.Item
-                  label="Mô tả chi tiết"
-                  name="description"
-                  rules={[{ required: true, message: "không được bỏ trống !" }]}
-                  validateTrigger={["onChange", "onBlur"]}
-                >
+                <Form.Item label="Mô tả chi tiết" name="description">
                   <Input.TextArea rows={4} disabled={mode === "view"} />
                 </Form.Item>
               </div>

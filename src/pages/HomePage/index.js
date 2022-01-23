@@ -14,7 +14,6 @@ import React, { useState, useEffect } from "react";
 import { HiOutlineSearch } from "react-icons/hi";
 import axios from "axios";
 import Modal from "antd/lib/modal/Modal";
-// import Header from "../../components/Header";
 import { DoubleRightOutlined } from "@ant-design/icons";
 import Footer from "../../components/Footer";
 import { HiOutlineMinusSm, HiPlusSm } from "react-icons/hi";
@@ -378,6 +377,7 @@ const Home = () => {
                     <p>{e?.description}</p>
                     <div className="w-full">
                       <Checkbox
+                        style={{ display: "none" }}
                         value={checked}
                         onChange={(e) => setChecked(e?.target?.checked)}
                       >
@@ -436,6 +436,14 @@ const Home = () => {
                         </Form.Item>
                         <></>
                       </Form>
+                      <div>
+                        <Form.Item>
+                          Giá cộng thêm của xe:{" "}
+                          {e?.price
+                            .toString()
+                            .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        </Form.Item>
+                      </div>
                       <div className=" inline-block pr-2 py-1 text-2xl mt-2">
                         Giá thuê:{" "}
                         {(
@@ -457,26 +465,46 @@ const Home = () => {
             })}
             <div className="pl-10 mt-10 border-dashed border-2 pt-2">
               <h1 className="text-2xl">Liên hệ cho thuê xe</h1>
-              <ul className="list-disc">
-                <li>
-                  <span className="font-bold mr-5">Địa chỉ:</span>Mai dịch, Cầu
-                  Giấy, Hà Nội
-                </li>
-                <li>
-                  <span className="font-bold mr-4">Hotline:</span>
-                  0972.314.521
-                </li>
-                <li>
-                  <span className="font-bold mr-6">Email:</span>{" "}
-                  manhhieua1@gmail.com
-                </li>
-                <li>
-                  <span className="font-bold mr-3">Website:</span>
-                  <a href="kiem-thu-oto.herokuapp.com" className="">
-                    kiem-thu-oto.herokuapp.com
-                  </a>
-                </li>
-              </ul>
+              <div className=" flex">
+                <ul className="list-disc">
+                  <li>
+                    <span className="font-bold mr-5">Địa chỉ:</span>Mai dịch,
+                    Cầu Giấy, Hà Nội
+                  </li>
+                  <li>
+                    <span className="font-bold mr-4">Hotline:</span>
+                    0972.314.521
+                  </li>
+                  <li>
+                    <span className="font-bold mr-6">Email:</span>{" "}
+                    manhhieua1@gmail.com
+                  </li>
+                  <li>
+                    <span className="font-bold mr-3">Website:</span>
+                    <a href="kiem-thu-oto.herokuapp.com" className="">
+                      kiem-thu-oto.herokuapp.com
+                    </a>
+                  </li>
+                </ul>
+                <div className="ml-10  border-dashed border-l-2">
+                  <span className="text-2xl">
+                    {" "}
+                    Công thức tính giá tiền:{" "}
+                    <span className="text-red-400">[A+B+C+D]*n</span>{" "}
+                  </span>
+                  <div>
+                    - A= Dòng xe: Toyota (+100.000 VNĐ) Vinfast (+200.000 VND)
+                    Hyundai (+150.000 VNĐ)<br></br> - B= Mức sử dụng -mức giá áp
+                    dụng: {`<100km /ngày`} : 300.000VNĐ; 100km-250km/ngày :
+                    450.000 VNĐ 250km- 500km/ngày : 550.000 VNĐ;{" "}
+                    {`> 500km/ngày : 650.000 VNĐ`}
+                    <br></br>- C = Giá tiền áp dụng với loại xe (với mức giá áp
+                    dụng): 4 = 100.000 VNĐ; 7 = 200.000 VNĐ; 16 - 350.000 VNĐ{" "}
+                    <br></br> - D = Giá cộng thêm của từng con xe: ( vd: xe A :
+                    50.000 VNĐ, xe B: 70.000 VNĐ) <br></br>- n = ngày
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </Modal>
